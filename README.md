@@ -1,1 +1,0 @@
-"# EGN_Validator" 
