@@ -52,7 +52,7 @@
             {
                 if (i == 4)
                 {
-                    Console.WriteLine("Невалидно ЕГН от 5 опита. Програмата приключва!");
+                    Console.WriteLine("Въведохте 5 невалидни ЕГН-та. Програмата приключва!");
                     return;
                 }
 
@@ -74,7 +74,7 @@
                 }
                 catch (SystemException)
                 {
-                    Console.WriteLine("Невалиден ден!");
+                    Console.WriteLine("Несъществуваща дата!");
                     if (i == 3)
                     {
                         Console.WriteLine("Последен опит!");
@@ -91,8 +91,9 @@
             var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
             var currentYear = currentDate.Year;
             var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
-            var region = "";
+
             var regionNumber = int.Parse(input.Substring(6, 3));
+            var region = "";
 
             foreach (var area in regions)
             {
