@@ -45,19 +45,20 @@
                                                                 деца от предвиденото. */
             };
 
-            Console.WriteLine("Въведете ЕГН: ");
+            Console.WriteLine("Въведете ЕГН:");
             var input = Console.ReadLine();
 
             for (int i = 0; i < 5; i++)
             {
                 if (i == 4)
                 {
+                    Console.WriteLine("Невалидно ЕГН от 5 опита. Програмата приключва!");
                     return;
                 }
 
                 try
                 {
-                    ValidateInput(input);
+                    ValidateInput(input);     
                     break;
                 }
                 catch (ArgumentException ex)
@@ -84,26 +85,8 @@
                 }
             }
 
-            var year = int.Parse(input.Substring(0, 2));
-            var month = int.Parse(input.Substring(2, 2));
-            var day = int.Parse(input.Substring(4, 2));
+            var currentDate = GetDateAsDateTime(input);
 
-            if (month <= 12)
-            {
-                year += 1900;
-            }
-            else if (month <= 32)
-            {
-                year += 1800;
-                month -= 20;
-            }
-            else if (month <= 52)
-            {
-                year += 2000;
-                month -= 40;
-            }
-
-            var currentDate = new DateTime(year, month, day);
             var dayInBulgarian = currentDate.ToString("dddd", new CultureInfo("bg-BG"));
             var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
             var currentYear = currentDate.Year;
@@ -127,32 +110,51 @@
             Console.WriteLine(new string('-', 60));
 
             var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
-            Console.WriteLine(result);
 
+            Console.WriteLine(result);
             Console.WriteLine(new string('-', 60));
             Console.WriteLine();
+        }
+
+        private static DateTime GetDateAsDateTime(string input)
+        {
+            var year = int.Parse(input.Substring(0, 2));
+            var month = int.Parse(input.Substring(2, 2));
+            var day = int.Parse(input.Substring(4, 2));
+
+            if (month <= 12)
+            {
+                year += 1900;
+            }
+            else if (month <= 32)
+            {
+                year += 1800;
+                month -= 20;
+            }
+            else if (month <= 52)
+            {
+                year += 2000;
+                month -= 40;
+            }
+
+            return new DateTime(year, month, day);
         }
 
         private static void ValidateInput(string input)
         {
             ValidateInputLength(input);
             ValidateInputSymbols(input);
-
-            var currentMonth = input.Substring(2, 2);
-            var currentDay = input.Substring(4, 2);
-            var areaPart = input.Substring(6, 3);
-            var controlDigit = input[input.Length - 1];
-
-            ValidateMonth(currentMonth);
-            ValidateDay(currentDay);
-            var date = DateTime.ParseExact(input.Substring(0, 6), "yyMMdd", CultureInfo.InvariantCulture);
+            ValidateMonth(input);
+            ValidateDay(input);
+            
+            var date = GetDateAsDateTime(input); // validating specific dates - as 30days months and February
+                                                 // if is invalid will throw invalid system exc.
             ValidateControlDigit(input);
         }
 
         private static void ValidateControlDigit(string input)
         {
-            var controlDigit = int.Parse(input[input.Length - 1].ToString());
-
+            var controlDigit = int.Parse(input[^1].ToString());
             var calculatedResult = CalculateResult(input.Substring(0, 9));
 
             if (controlDigit != calculatedResult)
@@ -164,7 +166,6 @@
         private static int CalculateResult(string v)
         {
             var EGNWeights = new int[] { 2, 4, 8, 5, 10, 9, 7, 3, 6 };
-
             var result = 0;
 
             for (int i = 0; i < 9; i++)
@@ -173,13 +174,12 @@
             }
 
             result -= ((result / 11) * 11);
-
             return result == 10 ? 0 : result;
         }
 
-        private static void ValidateDay(string day)
+        private static void ValidateDay(string input)
         {
-            var dayAsInt = int.Parse(day);
+            var dayAsInt = int.Parse(input.Substring(4, 2));
 
             if (dayAsInt < 0 || dayAsInt > 31)
             {
@@ -187,11 +187,11 @@
             }
         }
 
-        private static void ValidateMonth(string month)
+        private static void ValidateMonth(string input)
         {
-            var monthAsInt = int.Parse(month);
+            var monthAsInt = int.Parse(input.Substring(2, 2));
 
-            if ((monthAsInt > 12 && monthAsInt < 21) || (monthAsInt > 32 && monthAsInt < 41) || monthAsInt > 42)
+            if ((monthAsInt > 12 && monthAsInt < 21) || (monthAsInt > 32 && monthAsInt < 41) || monthAsInt > 52)
             {
                 throw new ArgumentException("Невалиден месец!");
             }
