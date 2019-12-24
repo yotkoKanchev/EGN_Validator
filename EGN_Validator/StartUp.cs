@@ -115,6 +115,9 @@
             Console.WriteLine(result);
             Console.WriteLine(new string('-', 60));
             Console.WriteLine();
+
+            // waits for input to keep the console on when run .exe file
+            Console.ReadKey();
         }
 
         private static DateTime GetDateAsDateTime(string input)
@@ -182,7 +185,7 @@
         {
             var dayAsInt = int.Parse(input.Substring(4, 2));
 
-            if (dayAsInt < 0 || dayAsInt > 31)
+            if (dayAsInt < 0 || dayAsInt > 31 || dayAsInt == 0)
             {
                 throw new ArgumentException("Невалиден ден!");
             }
@@ -192,7 +195,7 @@
         {
             var monthAsInt = int.Parse(input.Substring(2, 2));
 
-            if ((monthAsInt > 12 && monthAsInt < 21) || (monthAsInt > 32 && monthAsInt < 41) || monthAsInt > 52)
+            if ((monthAsInt > 12 && monthAsInt < 21) || (monthAsInt > 32 && monthAsInt < 41) || monthAsInt > 52 || monthAsInt == 0)
             {
                 throw new ArgumentException("Невалиден месец!");
             }
