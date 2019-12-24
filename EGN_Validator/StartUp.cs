@@ -53,6 +53,8 @@
                 if (i == 4)
                 {
                     Console.WriteLine("Въведохте 5 невалидни ЕГН-та. Програмата приключва!");
+                    // waits for input to keep the console on when run .exe file
+                    Console.ReadKey();
                     return;
                 }
 
