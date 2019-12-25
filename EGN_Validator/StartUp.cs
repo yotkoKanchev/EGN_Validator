@@ -207,7 +207,7 @@
         {
             if (!input.All(char.IsDigit))
             {
-                throw new ArgumentException("EGN трябва да съдъдржа само цифри!");
+                throw new ArgumentException("EGN трябва да съдъдржа само неотрицателни цифри!");
             }
         }
 
