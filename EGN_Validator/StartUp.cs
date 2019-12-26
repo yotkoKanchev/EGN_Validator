@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     public class StartUp
     {
@@ -48,19 +49,51 @@
             Console.WriteLine("Въведете ЕГН:");
             var input = Console.ReadLine();
 
+
             for (int i = 0; i < 5; i++)
             {
-                if (i == 4)
+                if (i == 5)
                 {
                     Console.WriteLine("Въведохте 5 невалидни ЕГН-та. Програмата приключва!");
-                    // waits for input to keep the console on when run .exe file
-                    Console.ReadKey();
                     return;
                 }
 
                 try
                 {
-                    ValidateInput(input);     
+                    ValidateInput(input);
+
+                    //validating valid day and month via DateTime:
+                    var currentDate = GetDateAsDateTime(input);
+
+                    var dayInBulgarian = currentDate.ToString("dddd", new CultureInfo("bg-BG"));
+                    var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
+                    var currentYear = currentDate.Year;
+                    var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
+
+                    var regionNumber = int.Parse(input.Substring(6, 3));
+                    var region = string.Empty;
+
+                    foreach (var area in regions)
+                    {
+                        if (regionNumber < area.Key)
+                        {
+                            region = area.Value;
+                            break;
+                        }
+                    }
+
+                    var postfix = sex == "Жена" ? "а" : "";
+
+                    Console.WriteLine();
+                    Console.WriteLine($"Информация за ЕГН: * {input} *");
+                    Console.WriteLine(new string('-', 60));
+
+                    var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
+
+                    Console.WriteLine(result);
+                    Console.WriteLine(new string('-', 60));
+                    Console.WriteLine();
+
                     break;
                 }
                 catch (ArgumentException ex)
@@ -69,6 +102,12 @@
                     if (i == 3)
                     {
                         Console.WriteLine("Последен опит!");
+                    }
+
+                    if (i == 4)
+                    {
+                        Console.WriteLine("Въведохте 5 невалидни ЕГН-та. Програмата приключва!");
+                        return;
                     }
 
                     Console.WriteLine("Въведете ново ЕГН: ");
@@ -82,51 +121,25 @@
                         Console.WriteLine("Последен опит!");
                     }
 
+                    if (i == 4)
+                    {
+                        Console.WriteLine("Въведохте 5 невалидни ЕГН-та. Програмата приключва!");
+                        return;
+                    }
+
                     Console.WriteLine("Въведете ново ЕГН: ");
                     input = Console.ReadLine();
                 }
             }
-
-            var currentDate = GetDateAsDateTime(input);
-
-            var dayInBulgarian = currentDate.ToString("dddd", new CultureInfo("bg-BG"));
-            var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
-            var currentYear = currentDate.Year;
-            var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
-
-            var regionNumber = int.Parse(input.Substring(6, 3));
-            var region = "";
-
-            foreach (var area in regions)
-            {
-                if (regionNumber < area.Key)
-                {
-                    region = area.Value;
-                    break;
-                }
-            }
-
-            var postfix = sex == "Жена" ? "а" : "";
-
-            Console.WriteLine();
-            Console.WriteLine($"Информация за ЕГН: * {input} *");
-            Console.WriteLine(new string('-', 60));
-
-            var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
-
-            Console.WriteLine(result);
-            Console.WriteLine(new string('-', 60));
-            Console.WriteLine();
-
             // waits for input to keep the console on when run .exe file
             Console.ReadKey();
         }
 
         private static DateTime GetDateAsDateTime(string input)
         {
-            var year = int.Parse(input.Substring(0, 2));
-            var month = int.Parse(input.Substring(2, 2));
-            var day = int.Parse(input.Substring(4, 2));
+            var year = int.Parse(input[0..2]);
+            var month = int.Parse(input[2..4]);
+            var day = int.Parse(input[4..6]);
 
             if (month <= 12)
             {
@@ -152,9 +165,6 @@
             ValidateInputSymbols(input);
             ValidateMonth(input);
             ValidateDay(input);
-            
-            var date = GetDateAsDateTime(input); // validating specific dates - as 30days months and February
-                                                 // if is invalid will throw invalid system exc.
             ValidateControlDigit(input);
         }
 
@@ -185,9 +195,9 @@
 
         private static void ValidateDay(string input)
         {
-            var dayAsInt = int.Parse(input.Substring(4, 2));
+            var dayAsInt = int.Parse(input[4..6]);
 
-            if (dayAsInt < 0 || dayAsInt > 31 || dayAsInt == 0)
+            if (dayAsInt <= 0 || dayAsInt > 31)
             {
                 throw new ArgumentException("Невалиден ден!");
             }
@@ -195,9 +205,12 @@
 
         private static void ValidateMonth(string input)
         {
-            var monthAsInt = int.Parse(input.Substring(2, 2));
+            var monthAsInt = int.Parse(input[2..4]);
 
-            if ((monthAsInt > 12 && monthAsInt < 21) || (monthAsInt > 32 && monthAsInt < 41) || monthAsInt > 52 || monthAsInt == 0)
+            if ((monthAsInt > 12 && monthAsInt < 21) ||
+                (monthAsInt > 32 && monthAsInt < 41) ||
+                monthAsInt > 52 ||
+                monthAsInt <= 0)
             {
                 throw new ArgumentException("Невалиден месец!");
             }
@@ -205,9 +218,10 @@
 
         private static void ValidateInputSymbols(string input)
         {
-            if (!input.All(char.IsDigit))
+            var match = Regex.Match(input, @"^[0-9]{10}$");
+            if (!match.Success)  /*!input.All(char.IsDigit) */
             {
-                throw new ArgumentException("EGN трябва да съдъдржа само неотрицателни цифри!");
+                throw new ArgumentException("EGN трябва да съдържа само неотрицателни цифри!");
             }
         }
 
