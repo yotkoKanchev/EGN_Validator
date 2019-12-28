@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
-    using System.Text.RegularExpressions;
 
     using Validators;
 
@@ -17,7 +16,6 @@
 
             Console.WriteLine("Въведете ЕГН:");
             var input = Console.ReadLine();
-
 
             for (int i = 0; i < 5; i++)
             {
@@ -34,12 +32,14 @@
                     //validating valid day and month via DateTime:
                     var currentDate = GetDateAsDateTime(input);
                     var result = GenerateOutput(currentDate, input, regions);
+
                     Console.WriteLine(result);
                     break;
                 }
                 catch (ArgumentException ex)
                 {
                     Console.WriteLine(ex.Message);
+
                     if (i == 3)
                     {
                         Console.WriteLine("Последен опит!");
@@ -57,6 +57,7 @@
                 catch (SystemException)
                 {
                     Console.WriteLine("Несъществуваща дата!");
+
                     if (i == 3)
                     {
                         Console.WriteLine("Последен опит!");
@@ -83,19 +84,7 @@
             var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
             var currentYear = currentDate.Year;
             var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
-
-            var regionNumber = int.Parse(input.Substring(6, 3)); 
-            var region = string.Empty;
-
-            foreach (KeyValuePair<int,string> area in regions)
-            {
-                if (regionNumber < area.Key)
-                {
-                    region = area.Value;
-                    break;
-                }
-            }
-
+            var region = GetRegion(input, regions);
             var postfix = sex == "Жена" ? "а" : "";
 
             sb.AppendLine();
@@ -108,6 +97,21 @@
             sb.AppendLine(new string('-', 60));
 
             return sb.ToString();
+        }
+
+        private static string GetRegion(string input, RegionsRepository regions)
+        {
+            var regionNumber = int.Parse(input[6..9]);
+
+            foreach (KeyValuePair<int, string> area in regions)
+            {
+                if (regionNumber < area.Key)
+                {
+                    return area.Value;
+                }
+            }
+
+            return null;
         }
 
         private static DateTime GetDateAsDateTime(string input)

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EGN_Validator
+﻿namespace EGN_Validator
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     public class RegionsRepository : IEnumerable
     {
         private Dictionary<int, string> regions;
