@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace EGN_Validator.Validators
+﻿namespace EGN_Validator.Validators
 {
+    using System;
+
     public class ControlDigitValidator : Validator
     {
         public override void Validate(string input)
