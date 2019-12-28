@@ -2,6 +2,6 @@
 {
     public interface IValidator
     {
-        void Validate();
+        void Validate(string input);
     }
 }
