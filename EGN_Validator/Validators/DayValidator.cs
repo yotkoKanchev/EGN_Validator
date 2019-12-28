@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class DayValidator : Validator
+    public class DayValidator : IValidator
     {
-        public override void Validate(string input)
+        public void Validate(string input)
         {
             var dayAsInt = int.Parse(input[4..6]);
 

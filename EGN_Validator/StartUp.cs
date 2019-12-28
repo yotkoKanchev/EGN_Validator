@@ -3,13 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
+
+    using Validators;
 
     public class StartUp
     {
         public static void Main()
         {
+            var validator = new Validator();
             var regions = new Dictionary<int, string>()
             {
                 [43] = "Благоевград",           /* от 000 до 043 */
@@ -60,40 +63,12 @@
 
                 try
                 {
-                    ValidateInput(input);
+                    validator.Validate(input);
 
                     //validating valid day and month via DateTime:
                     var currentDate = GetDateAsDateTime(input);
-
-                    var dayInBulgarian = currentDate.ToString("dddd", new CultureInfo("bg-BG"));
-                    var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
-                    var currentYear = currentDate.Year;
-                    var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
-
-                    var regionNumber = int.Parse(input.Substring(6, 3));
-                    var region = string.Empty;
-
-                    foreach (var area in regions)
-                    {
-                        if (regionNumber < area.Key)
-                        {
-                            region = area.Value;
-                            break;
-                        }
-                    }
-
-                    var postfix = sex == "Жена" ? "а" : "";
-
-                    Console.WriteLine();
-                    Console.WriteLine($"Информация за ЕГН: * {input} *");
-                    Console.WriteLine(new string('-', 60));
-
-                    var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
-
+                    var result = GenerateOutput(currentDate, input, regions);
                     Console.WriteLine(result);
-                    Console.WriteLine(new string('-', 60));
-                    Console.WriteLine();
-
                     break;
                 }
                 catch (ArgumentException ex)
@@ -133,6 +108,40 @@
             }
             // waits for input to keep the console on when run .exe file
             Console.ReadKey();
+        }
+
+        private static string GenerateOutput(DateTime currentDate, string input, Dictionary<int,string> regions)
+        {
+            var sb = new StringBuilder();
+            var dayInBulgarian = currentDate.ToString("dddd", new CultureInfo("bg-BG"));
+            var monthInBulgarian = currentDate.ToString("MMMM", new CultureInfo("bg-BG"));
+            var currentYear = currentDate.Year;
+            var sex = int.Parse(input[8].ToString()) % 2 == 0 ? "Мъж" : "Жена";
+
+            var regionNumber = int.Parse(input.Substring(6, 3));
+            var region = string.Empty;
+
+            foreach (var area in regions)
+            {
+                if (regionNumber < area.Key)
+                {
+                    region = area.Value;
+                    break;
+                }
+            }
+
+            var postfix = sex == "Жена" ? "а" : "";
+
+            sb.AppendLine();
+            sb.AppendLine($"Информация за ЕГН: * {input} *");
+            sb.AppendLine(new string('-', 60));
+
+            var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
+
+            sb.AppendLine(result);
+            sb.AppendLine(new string('-', 60));
+
+            return sb.ToString();
         }
 
         private static DateTime GetDateAsDateTime(string input)

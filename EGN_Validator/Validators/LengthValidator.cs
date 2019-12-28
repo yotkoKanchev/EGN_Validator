@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class LengthValidator : Validator
+    public class LengthValidator : IValidator
     {
-        public override void Validate(string input)
+        public void Validate(string input)
         {
             if (input.Length != 10)
             {

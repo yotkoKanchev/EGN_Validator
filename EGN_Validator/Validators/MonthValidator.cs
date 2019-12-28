@@ -2,9 +2,9 @@
 {
     using System;
 
-    public class MonthValidator : Validator
+    public class MonthValidator : IValidator
     {
-        public override void Validate(string input)
+        public void Validate(string input)
         {
             var monthAsInt = int.Parse(input[2..4]);
 

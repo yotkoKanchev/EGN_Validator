@@ -2,12 +2,12 @@
 {
     using System;
 
-    public class ControlDigitValidator : Validator
+    public class ControlDigitValidator : IValidator
     {
-        public override void Validate(string input)
+        public void Validate(string input)
         {
             var controlDigit = int.Parse(input[^1].ToString());
-            var calculatedResult = CalculateResult(input[0..8]);
+            var calculatedResult = CalculateResult(input[0..9]);
 
             if (controlDigit != calculatedResult)
             {

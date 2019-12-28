@@ -3,9 +3,9 @@
     using System;
     using System.Text.RegularExpressions;
 
-    public class SymbolsValidator : Validator
+    public class SymbolsValidator : IValidator
     {
-        public override void Validate(string input)
+        public void Validate(string input)
         {
             var match = Regex.Match(input, @"^[0-9]{10}$");
 
