@@ -26,7 +26,6 @@ namespace EGN_Validator.Validators
             this.monthValidator.Validate(input);
             this.dayValidator.Validate(input);
             this.controlDigitValidator.Validate(input);
-
         }
     }
 }
