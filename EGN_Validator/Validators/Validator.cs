@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EGN_Validator.Validators
+﻿namespace EGN_Validator.Validators
 {
     public class Validator : IValidator
     {

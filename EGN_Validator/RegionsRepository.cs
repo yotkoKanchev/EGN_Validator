@@ -5,7 +5,7 @@
 
     public class RegionsRepository : IEnumerable
     {
-        private Dictionary<int, string> regions;
+        private readonly Dictionary<int, string> regions;
 
         public RegionsRepository()
         {

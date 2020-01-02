@@ -91,7 +91,8 @@
             sb.AppendLine($"Информация за ЕГН: * {input} *");
             sb.AppendLine(new string('-', 60));
 
-            var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} {currentYear}г.({dayInBulgarian}) в регион: {region}";
+            var result = $"{sex}, роден{postfix} на {currentDate.Day} {monthInBulgarian} " +
+                $"{currentYear}г.({dayInBulgarian}) в регион: {region}";
 
             sb.AppendLine(result);
             sb.AppendLine(new string('-', 60));
